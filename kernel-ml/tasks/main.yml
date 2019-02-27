@@ -1,0 +1,38 @@
+---
+- name: enable ELRepo
+  copy:
+    src: elrepo.repo
+    dest: /etc/yum.repos.d/elrepo.repo
+    owner: root
+    group: root
+    mode: 0644
+
+- name: ensure kernel-ml is installed
+  yum:
+    name: kernel-ml{{ kernel_ml_version and ('-' + kernel_ml_version) }}
+    state: present
+    enablerepo: elrepo-kernel 
+  notify: reconfigure grub2
+
+- name: configure grub2 to boot first entry
+  lineinfile:
+    dest: /etc/default/grub
+    owner: root
+    group: root
+    mode: '0644'
+    backup: yes
+    create: yes
+    regexp: '{{ item.regexp }}'
+    line: '{{ item.line }}'
+    state: present
+  with_items:
+    - regexp: 'GRUB_DEFAULT='
+      line: 'GRUB_DEFAULT=0'
+    - regexp: 'GRUB_TIMEOUT='
+      line: 'GRUB_TIMEOUT=5'
+  notify: reconfigure grub2
+
+- name: clean previous stored boot entry by deleting grubenv
+  file:
+    path: /boot/grub2/grubenv
+    state: absent
