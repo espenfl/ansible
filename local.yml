@@ -1,11 +1,15 @@
 - hosts: localhost
   become: true
   tasks:
-    # first update
+    # first update packages
     - name: update packages
-      yum: name=* state=latest update_cache=yes
+      yum: 
+        name: * 
+        state: latest 
+        update_cache: yes
     # then check that all packages are installed
     - name: verify that all necessary packages are installed
       yum:
+        enablerepo: epel
         name:
           - openconnect
