@@ -10,3 +10,5 @@
         enablerepo: epel
         name:
           - openconnect
+          - NetworkManager-openconnect
+          - NetworkManager-openconnect-gnome
