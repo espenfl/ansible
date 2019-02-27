@@ -9,7 +9,8 @@
 
 - name: ensure kernel-ml is installed
   yum:
-    name: kernel-ml{{ kernel_ml_version and ('-' + kernel_ml_version) }}
+    #name: kernel-ml{{ kernel_ml_version and ('-' + kernel_ml_version) }}
+    name: kernel-ml # only use recent for now
     state: present
     enablerepo: elrepo-kernel 
   notify: reconfigure grub2
