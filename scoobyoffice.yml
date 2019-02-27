@@ -1,5 +1,12 @@
 - hosts: localhost
   become: true
   tasks:
-  - name: Install htop
-    yum: name=htop
+  # first update
+    - name: update packages
+      yum: name=* state=latest update_cache=yes
+  # then check that all packages are installed
+    - name: verify that all necessary packages are installed
+    - yum:
+        name:
+          - openconnect
+                
