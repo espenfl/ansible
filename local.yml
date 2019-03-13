@@ -9,7 +9,123 @@
       yum:
         enablerepo: epel
         name:
+          # Network
           - openconnect
           - NetworkManager-openconnect
           - NetworkManager-openconnect-gnome
+          - openvpn
+          - NetworkManager-openvpn
+          - NetworkManager-openvpn-gnome
+          - NetworkManager-vpnc
           - nmap
+          - nmap-ncat
+          # Development (mainly content of Development Tools, minus and pluss)
+          - automake
+          - autoconf
+          - libtool
+          - bison
+          - make
+          - binutils
+          - flex
+          - gettext
+          - gcc
+          - gcc-c++
+          - gcc-gfortran
+          - patch
+          - pkgconfig
+          - redhat-rpm-config
+          - rpm-build
+          - rpm-sign
+          - byacc
+          - cscope
+          - ctags
+          - diffstat
+          - doxygen
+          - elfutils
+          - git
+          - indent
+          - intltool
+          - pathutils
+          - swig
+          - systemtap
+          - cmake
+          - imake
+          - lua
+          - valgrind
+          - gdb
+          - parallel
+          # General packages
+          - gnuplot
+          - openssl
+          - openssl-devel
+          - readline
+          - readline-devel
+          - zlib
+          - zlib-devel
+          - libyaml-devel
+          - libffi-devel
+          - bzip2
+          - bzip2-devel
+          - tmux
+          - wmctrl
+          - icedtea-web
+          - java-openjdk
+          - gv
+          - gimp
+          - grace
+          - qpdf
+          - perl-Tk
+          - perl-Digest-MD5
+          - xorg-x11-utils
+          - inkscape
+          - glib2-devel
+          - gdk-pixbuf2-devel
+          - libsass
+          - libxml2
+          - libxml2-devel
+          - sassc
+          - qt
+          - qt-devel
+          - eigen3-devel
+          - libpng12
+          - openbabel
+          - octave
+          - fuse-sshfs
+          - ntfs-3g
+          - qalculate
+          - libqalculate
+          - xz
+          - graphviz
+          - kernel-devel
+          # AiiDA specific stuff
+          - erlang
+          - rabbitmq-server
+          - curl-devel
+          - gobject-introspection
+          - gobject-introspection-devel
+          - cairo
+          - cairo-devel
+          - cairo-gobject
+          - cairo-gobject-devel
+          - perl-Module-ScanDeps
+          - perl-Parse-Yapp
+          - perl-JSON
+          - perl-Capture-Tiny
+          - perl-Carp-Assert
+          - perl-Clone
+          - perl-Data-Calc
+          - perl-DataTime-Format-RFC3339
+          - perl-DBD-MySQL
+          - perl-DBD-SQLite
+          - perl-Digest-SHA
+          - perl-List-MoreUtils
+          - perl-openbabel
+          - perl-WWW-Curl
+          - perl-XML-Simple
+          - tree
+    - name: verify that all necessary packages are installed
+      yum:
+        name: emacs
+        state: absent
+        name: emacs-auctex
+        state: absent
