@@ -113,8 +113,8 @@
           - perl-Capture-Tiny
           - perl-Carp-Assert
           - perl-Clone
-          - perl-Data-Calc
-          - perl-DataTime-Format-RFC3339
+          - perl-Date-Calc
+          - perl-DateTime-Format-RFC3339
           - perl-DBD-MySQL
           - perl-DBD-SQLite
           - perl-Digest-SHA
