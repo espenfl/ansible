@@ -1,0 +1,57 @@
+---
+- name: set alternative python3 version to be installed
+  set_fact:
+    python3: 3.7.2
+- name: check alt python3 version
+  shell: /usr/local/bin/python3.7 --version
+  register: python2_version
+  ignore_errors: yes  # If not installed
+
+- name: download alternative python3
+  get_url: 
+    url: https://www.python.org/ftp/python/{{ python3 }}/Python-{{ python3 }}.tgz
+    dest: /tmp/Python-{{ python3 }}.tgz
+  vars:
+    comp_string: 'Python {{ python3 }}'
+  when: python3_version['stderr'] != comp_string
+  register: python3_downloaded
+
+- name: unpack alternative python3
+  unarchive:
+    src: /tmp/Python-{{ python3 }}.tgz
+    dest: /tmp
+    remote_src: yes
+    keep_newer: yes
+  when: python3_downloaded is changed
+  register: python3_unpacked
+
+- name: configure alternative python3
+  command: ./configure --prefix=/usr/local --enable-shared LDFLAGS="-Wl,-rpath /usr/local/lib"
+  args:
+    chdir: /tmp/Python-{{ python3 }}
+  when: python3_unpacked is changed
+  register: python3_configure
+
+- name: make install alternative python3
+  make:
+    chdir: /tmp/Python-{{ python3 }}
+    target: altinstall
+    params:
+      UNINST: 1  # Uninstal conflicting files
+  when: python3_configure is changed
+  register: python3_installed
+  become: yes
+
+- name: download get-pip.py
+  get_url:
+    url: https://bootstrap.pypa.io/get-pip.py
+    dest: /tmp/get-pip.py
+    mode: 0664
+  when: python3_installed is changed
+  register: pip3_downloaded
+
+- name: install pip for alternative python3
+  shell: /usr/local/bin/python3.7 /tmp/get-pip.py
+  become: yes
+  when: pip3_downloaded is changed
+  register: pip3_installed
