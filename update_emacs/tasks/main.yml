@@ -1,0 +1,62 @@
+---
+- name: set emacs version to be installed and username
+  set_fact:
+    emacs: 26.1
+    username: "{{ lookup('env','USER') }}"
+
+- name: check emacs version
+  shell: /home/{{ username }}/bin/emacs --version
+  register: emacs_version
+  ignore_errors: yes  # If not installed
+
+- name: download emacs
+  get_url: 
+    url: http://ftp.gnu.org/gnu/emacs/emacs-{{ emacs }}.tar.gz
+    dest: /tmp/emacs-{{ emacs }}.tar.gz
+  vars:
+    comp_string: "GNU Emacs {{ emacs }}"
+    emacs_ver: "emacs_version.stdout.splitlines()[0]"
+  when: emacs_ver != comp_string
+  register: emacs_downloaded
+
+- name: unpack emacs
+  unarchive:
+    src: /tmp/emacs-{{ emacs }}.tar.gz
+    dest: /tmp
+    remote_src: yes
+    keep_newer: yes
+  when: emacs_downloaded is changed
+  register: emacs_unpacked
+
+- name: configure emacs
+  command: ./configure --prefix=/home/{{ username }} --with-x-toolkit=no --with-xpm=no --with-jpeg=no --with-gif=no --with-tiff=no --with-gnutls=no 
+  args:
+    chdir: /tmp/emacs-{{ emacs }}
+  when: emacs_unpacked is changed
+  register: emacs_configure
+
+- name: make emacs
+  make:
+    chdir: /tmp/emacs-{{ emacs }}
+  when: emacs_configure is changed
+  register: emacs_make
+
+- name: make install emacs
+  make:
+    chdir: /tmp/emacs-{{ emacs }}
+    target: install
+    params:
+      UNINST: 1  # Uninstal conflicting files
+  when: emacs_make is changed
+  register: emacs_installed
+
+- name: create emacs.d folder
+  file:
+    path: /home/{{ username }}/.emacs.d
+    state: directory
+
+- name: set default config
+  copy: src=default.el dest=/home/{{ username}}/.emacs.d/
+
+- name: set init config if it does not exist
+  copy: src=init.el dest=/home/{{ username }}/.emacs.d/ force=no
