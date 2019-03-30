@@ -1,0 +1,3 @@
+[submodule "oracle-java"]
+	path = oracle-java
+	url = git@github.com:ansiblebit/oracle-java.git

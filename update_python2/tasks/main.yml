@@ -2,7 +2,6 @@
 - name: set alternative python2 version to be installed
   set_fact:
     python2: 2.7.16
-    python3: 3.7.2
 - name: check alt python2.7 version
   shell: /usr/local/bin/python2.7 --version
   register: python2_version

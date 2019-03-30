@@ -54,6 +54,7 @@
           - valgrind
           - gdb
           - parallel
+          - java-1.8.0-openjdk-devel
           # General packages
           - gnuplot
           - openssl
@@ -123,9 +124,15 @@
           - perl-WWW-Curl
           - perl-XML-Simple
           - tree
-    - name: verify that all necessary packages are installed
+    - name: verify that system emacs is not present
       yum:
         name: emacs
         state: absent
+    - name: verify that the system emacs-auctex is not present
+      yum:
         name: emacs-auctex
+        state: absent
+    - name: verify that system ruby is not present
+      yum:
+        name: ruby
         state: absent

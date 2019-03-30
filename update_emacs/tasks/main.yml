@@ -15,7 +15,7 @@
     dest: /tmp/emacs-{{ emacs }}.tar.gz
   vars:
     comp_string: "GNU Emacs {{ emacs }}"
-    emacs_ver: "emacs_version.stdout.splitlines()[0]"
+    emacs_ver: "{{ emacs_version.stdout_lines[0] }}"
   when: emacs_ver != comp_string
   register: emacs_downloaded
 
