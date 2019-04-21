@@ -19,6 +19,10 @@
           - NetworkManager-vpnc
           - nmap
           - nmap-ncat
+          # Filesystem
+          - ntfs-3g
+          - ntfsprogs
+          - gparted
           # Development (mainly content of Development Tools, minus and pluss)
           - automake
           - autoconf
