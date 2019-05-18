@@ -1,0 +1,22 @@
+---
+- name: set username
+  set_fact:
+    username: "{{ lookup('env','USER') }}"
+
+- name: ensure jabref directory is present
+  file:
+    path: /home/{{ username }}/opt/jabref
+    state: directory
+  
+- name: download jabref
+  get_url:
+    url: https://builds.jabref.org/master/JabRef--master--latest.jar
+    dest: /home/{{ username }}/opt/jabref/JabRef.jar
+  register: jabref_downloaded
+  
+- name: set jabref executable
+  template:
+    src: files/jabref
+    dest: /home/{{ username }}/bin/jabref
+    mode: u+x
+  when: jabref_downloaded is changed

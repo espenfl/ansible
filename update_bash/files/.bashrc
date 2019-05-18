@@ -1,0 +1,30 @@
+# .bashrc
+
+# Source global definitions
+if [ -f /etc/bashrc ]; then
+        . /etc/bashrc
+fi
+
+# Uncomment the following line if you don't like systemctl's auto-paging feature:
+# export SYSTEMD_PAGER=
+
+# Set default editor
+export EDITOR='emacs'
+
+# Load default python3 pyvenv
+source ~/env/3.7/bin/activate
+
+# Aliases
+alias e='emacs -nw'
+alias ssh-keygen='ssh-keygen -o -a 64'
+alias ldp2='. ~/bin/ldp2.sh'
+alias ldp3='. ~/bin/ldp3.sh'
+alias ldpaiida='. ~/bin/ldpaiida.sh'
+
+# Tmuxinator completion
+source $HOME/lib/ruby/gems/2.6.2/gems/tmuxinator-0.10.0/completion/tmuxinator.bash
+
+# Local adapts go in the following file
+if [ -f $HOME/.bashrc_local ]; then
+    . $HOME/.bashrc_local
+fi

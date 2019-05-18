@@ -1,0 +1,20 @@
+#/bin/bash
+# For one extended screen
+gnome-terminal --geometry 65x213+1920+0 --window-with-profile="tmux" --hide-menubar --maximize -e 'bash -ic "mux zero"'
+sleep 6
+gnome-terminal --geometry 66x213+1920+1200 --window-with-profile="tmux" --hide-menubar --full-screen -e 'bash -ic "mux one"'
+# For single screen
+gnome-terminal --window-with-profile="Unnamed" --hide-menubar --maximize -e 'bash -ic "mux zero"'
+# For separate screens
+#wmctrl -s 0
+#sleep 0.5 
+#gnome-terminal --window-with-profile="Unnamed" --hide-menubar --maximize -e 'bash -ic "mux zero"'
+#sleep 0.5 
+#wmctrl -r :ACTIVE: -N "one"
+#wmctrl -s 1
+#gnome-terminal --window-with-profile="Unnamed" --hide-menubar --full-screen -e 'bash -ic "mux one"'
+#sleep 0.5
+#wmctrl -r :ACTIVE: -N "zero"
+#sleep 0.5
+#wmctrl -r "one" -t 1
+#wmctrl -s 0

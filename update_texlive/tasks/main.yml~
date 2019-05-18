@@ -1,0 +1,42 @@
+---
+- name: set texlive to be installed and username
+  set_fact:
+    texlive: 2018
+    username: "{{ lookup('env','USER') }}"
+
+- name: check for local texlive path
+  stat:
+    path: /home/{{ username }}/opt/texlive/{{ texlive }}
+  register: directory_details
+  ignore_errors: yes  # If not installed
+
+- name: download texlive installer
+  get_url: 
+    url: http://mirror.ctan.org/systems/texlive/tlnet/install-tl-unx.tar.gz
+    dest: /tmp/install-tl-unx.tar.gz
+  when: directory_details.stat.exists
+  register: texlive_downloaded
+
+- name: distribute texlive profile
+  template:
+    src: files/texlive.profile
+    dest: 
+
+- name: unpack texlive installer
+  unarchive:
+    src: /tmp/install-tl-unx.tar.gz
+    dest: /tmp
+    remote_src: yes
+    keep_newer: yes
+  when: texlive_downloaded is changed
+  register: texlive_unpacked
+
+- name: fetch texlive installer build directory
+  - shell: ls -d /tmp/install-tl-*
+    register: dir_name
+  
+- name: start texlive installer
+  shell:
+    cmd: install-tl --profile texlive.profile
+    chdir: {{ item }}
+    with_items: dir_name.stdout_lines

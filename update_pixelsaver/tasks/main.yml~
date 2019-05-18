@@ -1,0 +1,19 @@
+---
+- name: set username
+  set_fact:
+    username: "{{ lookup('env','USER') }}"
+
+- name: clone git repo 
+  git:
+    repo: https://github.com/deadalnix/pixel-saver.git
+    dest: /tmp/pixelsaver
+    version: 1.10
+    clone: yes
+- name: copy extension to local directory
+  copy:
+    src: /tmp/pixelsaver/pixel-saver@deadalnix.me
+    dest: /home/{{ username }}/.local/share/gnome-shell/extensions
+- name: activate extension
+  command: gnome-shell-extension-tool -e pixel-saver@deadalnix.me
+- name: tell user that a modification might be necessary
+  debug: msg="If an invalid syntax is printed, please modify /usr/bin/gnome-shell-extension-tool to comply with Python2."

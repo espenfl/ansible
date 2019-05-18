@@ -1,0 +1,50 @@
+---
+- name: set ruby version to be installed and username
+  set_fact:
+    ruby: 2.6.2 
+    username: "{{ lookup('env','USER') }}"
+
+- name: check version
+  shell: /home/{{ username }}/bin/ruby --version
+  register: ruby_version
+  ignore_errors: yes  # If not installed
+
+- name: download ruby
+  get_url: 
+    url: https://cache.ruby-lang.org/pub/ruby/{{ ruby.rsplit('.', 1)[0] }}/ruby-{{ ruby }}.tar.gz
+    dest: /tmp/ruby-{{ ruby }}.tar.gz
+  vars:
+    comp_string: "{{ ruby }}"
+  when: not ruby_version.stdout_lines or (ruby_version.stdout_lines and ruby_version.stdout_lines[0].split()[1] != comp_string)
+  register: ruby_downloaded
+
+- name: unpack ruby
+  unarchive:
+    src: /tmp/ruby-{{ ruby }}.tar.gz
+    dest: /tmp
+    remote_src: yes
+    keep_newer: yes
+  when: ruby_downloaded is changed
+  register: ruby_unpacked
+
+- name: configure ruby
+  command: ./configure --prefix=/home/{{ username }} --with-openssl-dir=/usr/bin
+  args:
+    chdir: /tmp/ruby-{{ ruby }}
+  when: ruby_unpacked is changed
+  register: ruby_configure
+
+- name: make ruby
+  make:
+    chdir: /tmp/ruby-{{ ruby }}
+  when: ruby_configure is changed
+  register: ruby_make
+
+- name: make install ruby
+  make:
+    chdir: /tmp/ruby-{{ ruby }}
+    target: install
+    params:
+      UNINST: 1  # Uninstal conflicting files
+  when: ruby_make is changed
+  register: ruby_installed

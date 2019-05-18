@@ -1,0 +1,64 @@
+---javascript: void(0)
+- name: set java version to be installed and username
+  set_fact:
+    java: 8u202
+    download_url: 
+    username: "{{ lookup('env','USER') }}"
+
+    - name: check java version
+  shell: java -version
+  register: java_version
+  ignore_errors: yes  # If not installed
+
+- name: download java
+  command: "wget -q -O {{java_archive}} --no-check-certificate --no-cookies --header 'Cookie: oraclelicense=accept-securebackup-cookie' {{download_url}} creates={{java_archive}}"
+    
+    url: http://ftp.gnu.org/gnu/java/java-{{ java }}.tar.gz
+    dest: /tmp/java-{{ java }}.tar.gz
+  vars:
+    comp_string: "GNU Java {{ java }}"
+    java_ver: "{{ java_version.stdout_lines[0] }}"
+  when: java_ver != comp_string
+  register: java_downloaded
+
+- name: unpack java
+  unarchive:
+    src: /tmp/java-{{ java }}.tar.gz
+    dest: /tmp
+    remote_src: yes
+    keep_newer: yes
+  when: java_downloaded is changed
+  register: java_unpacked
+
+- name: configure java
+  command: ./configure --prefix=/home/{{ username }} --with-x-toolkit=no --with-xpm=no --with-jpeg=no --with-gif=no --with-tiff=no --with-gnutls=no 
+  args:
+    chdir: /tmp/java-{{ java }}
+  when: java_unpacked is changed
+  register: java_configure
+
+- name: make java
+  make:
+    chdir: /tmp/java-{{ java }}
+  when: java_configure is changed
+  register: java_make
+
+- name: make install java
+  make:
+    chdir: /tmp/java-{{ java }}
+    target: install
+    params:
+      UNINST: 1  # Uninstal conflicting files
+  when: java_make is changed
+  register: java_installed
+
+- name: create java.d folder
+  file:
+    path: /home/{{ username }}/.java.d
+    state: directory
+
+- name: set default config
+  copy: src=default.el dest=/home/{{ username}}/.java.d/
+
+- name: set init config if it does not exist
+  copy: src=init.el dest=/home/{{ username }}/.java.d/ force=no

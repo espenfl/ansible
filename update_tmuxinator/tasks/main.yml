@@ -1,0 +1,25 @@
+---
+- name: set username
+  set_fact:
+    username: "{{ lookup('env','USER') }}"
+
+- name: install tmuxinator with gem
+  gem:
+    name: tmuxinator
+    state: latest
+    executable: /home/{{ username }}/bin/gem
+
+- name: ensure .tmuxinator exists
+  file:
+    path: /home/{{ username }}/.tmuxinator 
+    state: directory
+
+- name: copy 
+  copy:
+    src: files/{{ item }}
+    dest: /home/{{ username }}/.tmuxinator/
+  with_items:
+    - zero.yml
+    - one.yml
+    - start_konsoles
+    - tmux.conf

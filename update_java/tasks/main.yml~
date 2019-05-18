@@ -1,0 +1,51 @@
+---
+- name: set java version to be installed and username
+  set_fact:
+    java: 8u202
+    java_full: 1.8.0_202
+    username: "{{ lookup('env','USER') }}"
+    
+- name: set download link
+  set_fact:
+    download_url: "https://download.oracle.com/otn-pub/java/jdk/8u202-b08/1961070e4c9b4e26a04e7f5a083f551e/jdk-{{ java }}-linux-x64.tar.gz"
+
+- name: check java version
+  shell: java -version
+  register: java_version
+  #ignore_errors: yes  # If not installed
+
+- name: download java
+  command: "wget -q -O /tmp/jdk-{{ java }}-linux-x64.tar.gz --no-check-certificate --no-cookies --header 'Cookie: oraclelicense=accept-securebackup-cookie' {{download_url}} creates=/tmp/jdk-{{ java }}-linux-x64.tar.gz" 
+  vars:
+    comp_string: 'java version "{{ java_full}}"'
+    java_ver: "{{ java_version.stderr_lines[0] }}"
+  when: java_ver != comp_string
+  register: java_downloaded
+
+- name: unpack java
+  become: yes
+  unarchive:
+    src: /tmp/jdk-{{ java }}-linux-x64.tar.gz
+    dest: /opt
+    remote_src: yes
+    keep_newer: yes
+  when: java_downloaded is changed
+  register: java_unpacked
+
+- name: fix root ownership
+  become: yes
+  file: state=directory path=/opt/jdk{{ java_full }} owner=root group=root recurse=yes
+  when: java_unpacked is changed
+  register: java_ownership
+
+#- name: using alternatives to configure java
+#  become: yes
+#  command: "alternatives --install '/usr/bin/java' 'java' '/opt/jdk{{ java_full }}/bin/java' 2000"
+#  when: java_ownership is changed
+
+- name: using alternatives to configure java
+  alternatives:
+    name: java
+    path: /opt/jdk{{ java_full }}/bin/java
+    priority: 2000
+  when: java_ownership is changed

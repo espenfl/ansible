@@ -1,0 +1,2 @@
+#!/bin/bash
+java -jar /home/{{ username }}/opt/jabref/JabRef-{{ jabref }}.jar

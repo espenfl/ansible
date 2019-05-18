@@ -1,0 +1,32 @@
+---
+- name: set jabref version to be installed and username
+  set_fact:
+    jabref: 4.3.1
+    username: "{{ lookup('env','USER') }}"
+
+- name: check jabref version
+  shell: /home/{{ username }}/bin/jabref -v
+  register: jabref_version
+  ignore_errors: yes  # If not installed
+
+- name: ensure jabref directory is present
+  file:
+    path: /home/{{ username }}/opt/jabref
+    state: directory
+  
+- name: download jabref
+  get_url:
+    url: https://www.fosshub.com/JabRef.html?dwl=JabRef-{{ jabref }}.jar
+    dest: /home/{{ username }}/opt/jabref/JabRef-{{ jabref }}.jar
+  vars:
+    comp_string: "JabRef {{ jabref }}"
+    jabref_ver: "{{ jabref_version.stdout_lines[0] | default('') }}"
+  when: jabref_ver != comp_string
+  register: jabref_downloaded
+  
+- name: set jabref executable
+  template:
+    src: files/jabref
+    dest: /home/{{ username }}/bin/jabref
+    mode: u+x
+  when: jabref_downloaded is changed

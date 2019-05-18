@@ -1,0 +1,16 @@
+---
+- name: set centos version
+  set_fact:
+    el: 7
+
+- name: install postgresql external repo
+  yum: name=https://download.postgresql.org/pub/repos/yum/reporpms/EL-{{ el }}-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+  become: yes
+
+- name: install postgresql
+  yum:
+    state: present
+    name:
+      - postgresql96
+      - postgresql96-server
+  become: yes

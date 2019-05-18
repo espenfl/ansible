@@ -1,0 +1,14 @@
+---
+- name: set username
+  set_fact:
+    username: "{{ lookup('env','USER') }}"
+
+- name: update .bashrc 
+  copy:
+    src: files/.bashrc
+    dest: /home/{{ username }}/
+
+- name: update .bash_profile
+  copy:
+    src: files/.bash_profile
+    dest: /home/{{ username }}/
