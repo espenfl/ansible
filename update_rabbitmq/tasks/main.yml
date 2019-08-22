@@ -1,0 +1,49 @@
+---
+- name: set el version
+  set_fact:
+    el: 7
+    
+- name: import necessary keys to RPM database
+  rpm_key:
+    state: present
+    key: https://github.com/rabbitmq/signing-keys/releases/download/2.0/rabbitmq-release-signing-key.asc
+
+- name: make sure we remove present erlang
+  yum:
+    name: erlang
+    state: absent
+
+- name: make sure we remove present erlang-examples
+  yum:
+    name: erlang-examples
+    state: absent
+
+- name: make sure we remove present rabbitmq
+  yum:
+    name: rabbitmq-server
+    state: absent
+    
+- name: add rabbitmq_erlang repo
+  template:
+    src: files/rabbitmq_erlang.j2
+    dest: /etc/yum.repos.d/rabbitmq_erlang.repo
+  become: yes
+
+- name: add rabbitmq repo from bintray
+  template:
+    src: files/rabbitmq.j2
+    dest: /etc/yum.repos.d/bintray-rabbitmq-server.repo
+  become: yes
+
+- name: install erlang, make sure we user the rabbitmq repo
+  yum:
+    name: erlang
+    exclude: *
+    include: rabbitmq_erlang
+
+- name: install rabbitmq, make sure we user the rabbitmq repo
+  yum:
+    name: rabbitmq-server
+    exclude: *
+    include: bintray-rabbitmq-server
+

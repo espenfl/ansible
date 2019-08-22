@@ -1,0 +1,39 @@
+---
+- name: enable the Negativo17 Spotify repo
+  yum_repository:
+    name: spotify
+    description: Negativos17's Spotify repo
+    baseurl: https://negativo17.org/repos/spotify/epel-$releasever/$basearch/
+    enabled: yes
+    skip_if_unavailable: yes
+    gpgkey: https://negativo17.org/repos/RPM-GPG-KEY-slaanesh
+    gpgcheck: yes
+    repo_gpgcheck: no
+  become: yes
+
+- name: install libpsl
+  yum:
+    enablerepo: epel
+    name: libpsl
+    state: latest
+  become: yes
+
+- name: install libidn2
+  yum:
+    enablerepo: epel
+    name: libidn2
+    state: latest
+  become: yes
+
+- name: install libnghttp2
+  yum:
+    enablerepo: epel
+    name: libnghttp2OB
+    state: latest
+  become: yes
+  
+- name: install the latest version of Spotify
+  yum:
+    name: spotify-client
+    state: latest
+  become: yes
